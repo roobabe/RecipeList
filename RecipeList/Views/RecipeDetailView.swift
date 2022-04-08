@@ -10,25 +10,42 @@ import SwiftUI
 struct RecipeDetailView: View {
     
     var recipe:Recipe
+    @State var servingSize = 2
     
     var body: some View {
         ScrollView {
-            VStack {
+            VStack (alignment: .leading) {
                 //MARK: Image
                 Image(recipe.image)
                     .resizable()
                     .scaledToFill()
                 
+                //MARK: Serving Size Picker
+                VStack (alignment: .leading) {
+                    Text("Select your serving size:")
+                    Picker ("", selection: $servingSize) {
+                        Text("2").tag(2)
+                        Text("4").tag(4)
+                        Text("6").tag(6)
+                        Text("8").tag(8)
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .frame(width: 160)
+                }
+                .padding(.vertical)
+                .padding([.leading, .trailing])
+                
                 //MARK: Ingredients
                 VStack(alignment: .leading) {
                     Text("Ingredients")
                         .font(.headline)
-                        .padding(.vertical, 1.0)
+                        .padding(.vertical, 5)
                     ForEach(recipe.ingredients) {i in
-                        Text(String("• ") + i.name)
+                        Text(String("• ") + RecipeModel.getPortion(ingredient: i, recipeServings: recipe.servings, targetServings: servingSize) + " " + i.name.lowercased())
                     }
                 }
-                .padding(.horizontal, 1.0)
+                .padding(.vertical)
+                .padding([.leading, .trailing])
                 //MARK: Divider
                 Divider()
                 
@@ -42,6 +59,7 @@ struct RecipeDetailView: View {
                     }
                 }
                 .padding(.horizontal, 1.0)
+                .padding([.leading, .trailing])
                 
             }
         }
