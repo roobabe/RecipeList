@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RecipeFeaturedView: View {
     @EnvironmentObject var model:RecipeModel
+    @State var isDetailViewShowing = false
     
     var body: some View {
         VStack (alignment: .leading, spacing: 0) {
@@ -24,19 +25,32 @@ struct RecipeFeaturedView: View {
                     ForEach (0..<model.recipes.count) { index in
                         //Only show featured recipes
                         if model.recipes[index].featured {
-                            //Recipe Card
-                            ZStack {
-                                Rectangle()
-                                    .foregroundColor(.white)
-                                VStack (spacing: 0){
-                                    Image(model.recipes[index].image)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .clipped()
-                                    Text(model.recipes[index].name)
-                                        .padding(5)
+                            //Recipe card button
+                            Button(action: {
+                                //Show the RecipeDetailView Sheet
+                                self.isDetailViewShowing = true
+                            }, label: {
+                                //Recipe Card
+                                ZStack {
+                                    Rectangle()
+                                        .foregroundColor(.white)
+                                    VStack (spacing: 0){
+                                        Image(model.recipes[index].image)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .clipped()
+                                        Text(model.recipes[index].name)
+                                            .padding(5)
+                                    }
                                 }
+                            })
+                            .sheet(isPresented: $isDetailViewShowing) {
+                                //Show the RecipeDetailView
+                                RecipeDetailView(recipe: model.recipes[index])
                             }
+                            
+                            
+                            
                             .frame(width: geo.size.width - 40, height: geo.size.height - 100, alignment: .center)
                             .cornerRadius(15)
                             .shadow(color: Color(.sRGB, red: 0, green: 0, blue: 0, opacity: 0.6), radius: 10, x: -5, y: 5)
@@ -62,10 +76,10 @@ struct RecipeFeaturedView: View {
         
     }
 }
-    
-    struct RecipeFeaturedView_Previews: PreviewProvider {
-        static var previews: some View {
-            RecipeFeaturedView()
-                .environmentObject(RecipeModel())
-        }
+
+struct RecipeFeaturedView_Previews: PreviewProvider {
+    static var previews: some View {
+        RecipeFeaturedView()
+            .environmentObject(RecipeModel())
     }
+}
